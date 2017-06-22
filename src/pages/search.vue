@@ -17,11 +17,11 @@
       </div>
       <div class="result-list" v-if="resultList && resShow">
         <ul>
-          <li v-for="songlist in resultList">
+          <router-link tag="li" v-for="songlist in resultList" :to="'/player/'+songlist.songid+'/search/0'">
               <i class="music-icon"></i>
               <h3 v-text="songlist.songname"></h3>
               <p v-text="songlist.singer"></p>
-          </li>
+          </router-link>
           <li v-show="loadingShow" class="loading"><i v-show="loadingAni"></i>{{loadingText}}</li>
         </ul>
       </div>
@@ -313,7 +313,7 @@ div.result-list {
             h3 {
                 width: 90%;
                 font-size: 16px;
-                padding: 10px 0 5px;
+                padding-top: 8px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;

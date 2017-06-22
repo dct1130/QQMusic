@@ -53,6 +53,7 @@ export default {
   data () {
     return {
       id: '',
+      type: '',
       musicid: '', // 歌曲ID
       pic: '',  // 歌手图片
       idx: 0,   // 当前播放歌曲索引
@@ -79,9 +80,11 @@ export default {
   },
   created () {
     this.id = this.$route.params.id
+    this.type = this.$route.params.type
+    this.idx = parseInt(this.$route.params.index)
   },
   mounted () {
-    this.getMusicId()
+    this.type === 'radio' ? this.getMusicId() : this.getMusicList(this.id)
     this.audio = document.getElementsByTagName('audio')[0]
     this.progBox = document.getElementById('porgress-box')
     this.lyricContainer = document.getElementById('lyricContainer')
@@ -112,15 +115,20 @@ export default {
         songid: songid
       })
       .then(res => {
-        let songlist1 = res.substr(res.indexOf('songlist=') + 9)
-        this.songList = JSON.parse(songlist1.substr(0, songlist1.indexOf('];') + 1))
-        this.songNum = this.songList.length - 1
-        this.$nextTick(() => {
-          this.initSwiper()
-          this.selectSong(this.songList[0], this.idx)
-          this.monitorSongEnd()
-          this.monitorTouch()
-        })
+        if (res) {
+          let songlist1 = res.substr(res.indexOf('songlist=') + 9)
+          this.songList = JSON.parse(songlist1.substr(0, songlist1.indexOf('];') + 1))
+          this.songNum = this.songList.length - 1
+          this.$nextTick(() => {
+            this.initSwiper()
+            this.selectSong(this.songList[this.idx], this.idx)
+            this.monitorSongEnd()
+            this.monitorTouch()
+          })
+        } else {
+          this.$store.dispatch('setToastMsg', '网络异常请返回重试！')
+          this.$store.dispatch('setShowToast', true)
+        }
       })
       .catch(res => {
         console.log(res)
@@ -362,6 +370,7 @@ export default {
       }
       // 上面用'\n'生成生成数组时，结果中最后一个为空元素，这里将去掉
       lines[lines.length - 1].length === 0 && lines.pop()
+      console.log(lines)
       lines.forEach((v, i, a) => {
         // 提取出时间[xx:xx.xx]
         let time = v.match(pattern)

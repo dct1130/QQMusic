@@ -5,7 +5,7 @@
       <div class="list">
         <h2>电台</h2>
         <ul>
-          <router-link tag="li" :to="'/player/'+radio.radioid" v-for="radio in list.radioList">
+          <router-link tag="li" :to="'/player/'+radio.radioid+'/radio/0'" v-for="radio in list.radioList">
             <div class="img">
               <img :src="radio.picUrl" alt="">
               <span class="icon"></span>

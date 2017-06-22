@@ -1,6 +1,7 @@
 <template lang="html">
   <section class="songsheet-warp" :style="bg">
     <div class="songsheet-top">
+      <div class="back" @click="$router.go(-1)"></div>
       <div class="songsheet-bg" :style="logo"></div>
       <div class="songsheet-title">
         <div class="left">
@@ -10,18 +11,18 @@
           <p v-if="type=='recom'"><span>{{cdlist.visitnum | total}}人播放</span>来自：{{cdlist.nickname}}</p>
           <p v-else>{{cdlist.date}} 更新</p>
         </div>
-        <div class="right"></div>
+        <router-link tag="div" class="right" :to="'/player/'+songid+'/'+type+'/0'"></router-link>
       </div>
       <div class="songsheet-gradient" :style="grade"></div>
     </div>
     <div class="songsheet-mid">
       <ul>
-        <li v-for="songlist in cdlist.songlist">
+        <router-link tag="li" :to="'/player/'+songid+'/'+type+'/'+index"  v-for="(songlist,index) in cdlist.songlist">
           <h6 v-if="type=='recom'" v-text="songlist.title"></h6>
           <h6 v-else v-text="songlist.data.songname"></h6>
           <p v-if="type=='recom'">{{songlist.singer[0].name}} · {{songlist.album.name}}</p>
           <p v-else v-text="songlist.data.singer"></p>
-        </li>
+        </router-link>
       </ul>
     </div>
     <div class="songsheet-btm" v-if="type=='recom'">
@@ -49,7 +50,8 @@ export default {
       cdlist: '',
       logo: '',
       bg: '',
-      grade: ''
+      grade: '',
+      songid: ''
     }
   },
   created () {
@@ -75,13 +77,6 @@ export default {
         disstid: self.id
       })
       .then(res => {
-        // for (let i = 0, j = res.songlist.length; i < j; i++) {
-        //   let singer = ''
-        //   for (let k = 0, f = res.songlist[i].data.singer.length; k < f; k++) {
-        //     singer += res.songlist[i].data.singer[k].name + ' / '
-        //   }
-        //   res.songlist[i].data.singer = singer.substr(0, singer.length - 3) + (res.songlist[i].data.albumname ? ' · ' + res.songlist[i].data.albumname : '') + (res.songlist[i].data.albumdesc ? ' · ' + res.songlist[i].data.albumdesc : '')
-        // }
         self.SheetCallback(res.cdlist[0])
       })
       .catch(res => {
@@ -115,9 +110,13 @@ export default {
       if (self.type === 'recom') {
         logoPic = self.cdlist.logo
         self.title = self.cdlist.dissname
+        self.songid = self.cdlist.songids
       } else {
         logoPic = self.cdlist.topinfo.pic_album
         self.title = self.cdlist.topinfo.ListName
+        for (let i = 0, l = self.cdlist.songlist.length; i < l; i++) {
+          self.songid += self.cdlist.songlist[i].data.songid + ','
+        }
       }
       self.logo = 'background-image:url(\'' + logoPic + '\')'
       // 根据图片生成对应背景
@@ -187,6 +186,30 @@ section.songsheet-warp{
 }
 div.songsheet-top {
     position: relative;
+    div.back{
+      position: absolute;;
+      width: 50px;
+      height: 50px;
+      z-index: 30;
+      &:after,
+      &:before {
+          display: block;
+          content: '';
+          width: 1px;
+          height: 15px;
+          background: #fff;
+      }
+      &:after {
+          transform: rotate(-50deg);
+          margin-top: -6px;
+          margin-left: 20px;
+      }
+      &:before {
+          transform: rotate(50deg);
+          margin-top: 25px;
+          margin-left: 20px;
+      }
+    }
     div.songsheet-bg {
         background-repeat: no-repeat;
         background-position: top center;
@@ -262,6 +285,7 @@ div.songsheet-top {
 div.songsheet-mid{
   ul{
     padding-left: 10px;
+    padding-bottom: 20px;
     li{
       height: 60px;
       padding-right: 10px;

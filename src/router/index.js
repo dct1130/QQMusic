@@ -41,7 +41,7 @@ export default new Router({
       component: SongSheet
     },
     {
-      path: '/player/:id',
+      path: '/player/:id/:type/:index',
       name: 'Player',
       component: Player
     }
