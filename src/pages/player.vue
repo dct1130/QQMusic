@@ -370,7 +370,6 @@ export default {
       }
       // 上面用'\n'生成生成数组时，结果中最后一个为空元素，这里将去掉
       lines[lines.length - 1].length === 0 && lines.pop()
-      console.log(lines)
       lines.forEach((v, i, a) => {
         // 提取出时间[xx:xx.xx]
         let time = v.match(pattern)
